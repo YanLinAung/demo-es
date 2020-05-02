@@ -1,5 +1,6 @@
-package com.lin.demoes;
+package com.lin.demoes.repository;
 
+import com.lin.demoes.model.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

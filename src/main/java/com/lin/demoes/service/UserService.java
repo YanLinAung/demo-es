@@ -1,5 +1,7 @@
-package com.lin.demoes;
+package com.lin.demoes.service;
 
+import com.lin.demoes.model.User;
+import com.lin.demoes.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,5 +19,9 @@ public class UserService {
 
     public void save(User user){
         userRepository.save(user);
+    }
+
+    public void removeAll(){
+        userRepository.deleteAll();
     }
 }

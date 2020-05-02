@@ -1,5 +1,7 @@
-package com.lin.demoes;
+package com.lin.demoes.controller;
 
+import com.lin.demoes.service.UserService;
+import com.lin.demoes.model.User;
 import com.lin.demoes.request.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;

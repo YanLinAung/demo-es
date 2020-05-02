@@ -1,4 +1,4 @@
-package com.lin.demoes;
+package com.lin.demoes.response;
 
 import lombok.Getter;
 import lombok.NonNull;

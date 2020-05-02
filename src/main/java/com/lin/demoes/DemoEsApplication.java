@@ -1,5 +1,7 @@
 package com.lin.demoes;
 
+import com.lin.demoes.model.User;
+import com.lin.demoes.service.UserService;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,6 +17,7 @@ public class DemoEsApplication {
 	@Bean
 	public ApplicationRunner runner(UserService userService) {
 		return args -> {
+			userService.removeAll();
 			User user = User.of("email");
 			userService.save(user);
 
