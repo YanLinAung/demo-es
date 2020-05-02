@@ -1,14 +1,19 @@
 package com.lin.demoes.controller;
 
-import com.lin.demoes.service.UserService;
+import com.lin.demoes.model.EsUser;
 import com.lin.demoes.model.User;
 import com.lin.demoes.request.*;
+import com.lin.demoes.service.UserService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController(value = "friends")
 public class FriendController {
@@ -60,8 +65,6 @@ public class FriendController {
 
     @PostMapping("/subscribe")
     public Map<String, Object> subscribe(@RequestBody SubscribeRequest request) {
-        String requestor = request.getRequestor();
-        String target = request.getTarget();
         User user = userService.findByEmail(request.getRequestor());
         user.getSubscribes().add(request.getTarget());
 
@@ -88,8 +91,10 @@ public class FriendController {
     }
 
     @PostMapping("/query")
-    public Map<String, Object> query(@RequestBody Map<String, String> request){
+    public Map<String, Object> query(@RequestBody String body){
+        List<EsUser> users = userService.query(body);
+        List<String> emails = users.stream().map(EsUser::getEmail).collect(Collectors.toList());
         return Map.of("success", true,
-                "email", List.of());
+                "email", emails);
     }
 }
