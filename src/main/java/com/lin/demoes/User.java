@@ -1,11 +1,14 @@
 package com.lin.demoes;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Document(collection = "users")
 @Data
@@ -19,5 +22,9 @@ public class User {
     @NonNull
     private String email;
 
-    private List<String> friends = new ArrayList<>();
+    private Set<String> friends = new HashSet<>();
+
+    private Set<String> subscribes = new HashSet<>();
+
+    private Set<String> blocks = new HashSet<>();
 }
