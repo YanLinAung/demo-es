@@ -77,7 +77,7 @@ public class FriendController {
     @PostMapping("/send-message")
     public Map<String, Object> sendMessage(@RequestBody MessageRequest request){
         User user = userService.findByEmail(request.getSender());
-        
+
         Collection<String> allCollections = CollectionUtils.union(user.getSubscribes(), user.getFriends());
         Collection<String> total = CollectionUtils.subtract(allCollections, user.getBlocks());
 
