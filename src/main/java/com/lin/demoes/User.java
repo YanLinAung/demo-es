@@ -1,13 +1,23 @@
 package com.lin.demoes;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collation = "users")
+import java.util.ArrayList;
+import java.util.List;
+
+@Document(collection = "users")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor(staticName = "of")
 public class User {
+
+    @Id
+    private String id;
+
+    @NonNull
+    private String email;
+
+    private List<String> friends = new ArrayList<>();
 }
