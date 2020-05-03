@@ -101,6 +101,8 @@ public class FriendController {
 
     @PostMapping("/query")
     public Map<String, Object> query(@RequestBody String body){
+        // POST /users*/_search
+        // json
         List<EsUser> users = userService.query(body);
         List<String> emails = users.stream().map(EsUser::getEmail).collect(Collectors.toList());
         return Map.of("success", true,

@@ -12,6 +12,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorResponse> handleException(Exception ex) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ex.printStackTrace();
         return new ResponseEntity<>(ErrorResponse.of(ex.getMessage()), status);
     }
 }

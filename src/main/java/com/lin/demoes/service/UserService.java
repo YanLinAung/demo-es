@@ -5,11 +5,21 @@ import com.lin.demoes.model.EsUser;
 import com.lin.demoes.model.User;
 import com.lin.demoes.repository.EsUserRepository;
 import com.lin.demoes.repository.UserRepository;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Service
 public class UserService {
@@ -45,7 +55,19 @@ public class UserService {
         esUserRepository.deleteAll();
     }
 
-    public List<EsUser> query(String query){
-        return elasticsearchRestTemplate.queryForList(new StringQuery(query), EsUser.class);
+    public List<EsUser> query(String query) {
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+                .should(termQuery("email", "john"))
+                .should(termQuery("email", "lisa"));
+
+        FieldSortBuilder sort = new FieldSortBuilder("email").order(SortOrder.DESC);
+
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(boolQueryBuilder)
+                .withSort(sort)
+                .build();
+
+        return elasticsearchRestTemplate.queryForList(searchQuery, EsUser.class);
     }
+
 }
