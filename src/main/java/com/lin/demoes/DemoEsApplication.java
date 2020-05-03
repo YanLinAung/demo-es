@@ -10,20 +10,19 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class DemoEsApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DemoEsApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DemoEsApplication.class, args);
+    }
 
-	@Bean
-	public ApplicationRunner runner(UserService userService) {
-		return args -> {
-			userService.removeAll();
-			User user = User.of("email");
-			userService.save(user);
+    @Bean
+    public ApplicationRunner runner(UserService userService) {
+        return args -> {
+            userService.removeAll();
+            User user = User.of("email");
+            userService.save(user);
 
-			User result = userService.findByEmail("email");
-			System.out.println("done -> " + result.getId());
-		};
-	}
-
+            User result = userService.findByEmail("email");
+            System.out.println("done -> " + result.getId());
+        };
+    }
 }

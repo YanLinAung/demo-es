@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+
+  demo-mongo:
+    hostname: mongo4
+    image: "mongo:4.2.6-bionic"
+    restart: always
+    expose:
+      - 27017
+    networks:
+      - demo-es-network
+
+  demo-elastic-search:
+    hostname: es7
+    image: "elasticsearch:7.6.2"
+    environment:
+      - discovery.type=single-node
+    expose:
+      - 9200
+      - 9300
+    networks:
+      - demo-es-network
+
+  demo-es:
+    hostname: demo-app
+    build: .
+    ports:
+      - 8080:8080
+    networks:
+      - demo-es-network
+    depends_on:
+      - demo-mongo
+      - demo-elastic-search
+    restart: on-failure
+    links:
+      - demo-mongo:mongo
+      - demo-elastic-search:search
+
+networks:
+  demo-es-network:
+    driver: bridge
