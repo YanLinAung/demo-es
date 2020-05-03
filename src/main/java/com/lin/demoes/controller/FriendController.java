@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestController(value = "friends")
@@ -83,11 +82,21 @@ public class FriendController {
     public Map<String, Object> sendMessage(@RequestBody MessageRequest request){
         User user = userService.findByEmail(request.getSender());
 
-        Collection<String> allCollections = CollectionUtils.union(user.getSubscribes(), user.getFriends());
+        Collection<String> combineCollections = CollectionUtils.union(user.getSubscribes(), user.getFriends());
+        Collection<String> allCollections = CollectionUtils.union(combineCollections, extractEmail(request.getText()));
         Collection<String> total = CollectionUtils.subtract(allCollections, user.getBlocks());
 
         return Map.of("success", true,
                 "recipients", new HashSet<>(total));
+    }
+
+    private List<String> extractEmail(String text) {
+        List<String> result = new ArrayList<>();
+        Matcher m = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+").matcher(text);
+        while (m.find()) {
+            result.add(m.group());
+        }
+        return result;
     }
 
     @PostMapping("/query")
