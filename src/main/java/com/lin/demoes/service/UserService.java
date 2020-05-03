@@ -5,21 +5,19 @@ import com.lin.demoes.model.EsUser;
 import com.lin.demoes.model.User;
 import com.lin.demoes.repository.EsUserRepository;
 import com.lin.demoes.repository.UserRepository;
+import com.lin.demoes.request.FilterItem;
+import com.lin.demoes.request.FriendQueryRequest;
+import com.lin.demoes.request.SortRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
-import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 @Service
 public class UserService {
@@ -55,19 +53,32 @@ public class UserService {
         esUserRepository.deleteAll();
     }
 
-    public List<EsUser> query(String query) {
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-                .should(termQuery("email", "john"))
-                .should(termQuery("email", "lisa"));
+    public List<EsUser> query(FriendQueryRequest query) {
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 
-        FieldSortBuilder sort = new FieldSortBuilder("email").order(SortOrder.DESC);
+        if(query.getFilter().getLogic().equalsIgnoreCase("OR")) {
+            for (FilterItem filter : query.getFilter().getFilters()) {
+                boolQueryBuilder
+                        .should(termQuery(filter.getField(), filter.getValue().replaceAll("\\*", "")));
+            }
+        } else {
+            for (FilterItem filter : query.getFilter().getFilters()) {
+                boolQueryBuilder
+                        .must(termQuery(filter.getField(), filter.getValue()));
+            }
+        }
 
-        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
-                .withSort(sort)
-                .build();
+        NativeSearchQueryBuilder builder = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder);
 
-        return elasticsearchRestTemplate.queryForList(searchQuery, EsUser.class);
+        for (SortRequest sortRequest : query.getSort()) {
+            if(sortRequest.getDir().equalsIgnoreCase("desc")) {
+                builder.withSort(new FieldSortBuilder(sortRequest.getField()).order(SortOrder.DESC));
+            } else {
+                builder.withSort(new FieldSortBuilder(sortRequest.getField()).order(SortOrder.ASC));
+            }
+        }
+
+        return elasticsearchRestTemplate.queryForList(builder.build(), EsUser.class);
     }
 
 }
